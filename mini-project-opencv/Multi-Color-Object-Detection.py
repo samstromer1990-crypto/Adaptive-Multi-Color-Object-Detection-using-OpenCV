@@ -2,9 +2,7 @@ import cv2 as cv
 import numpy as np
 
 
-# ============================================
-# SETTINGS
-# ============================================
+
 
 NUM_COLORS = 6
 
@@ -18,9 +16,7 @@ TOLERANCE_V = 70
 KMEANS_INTERVAL = 60
 
 
-# ============================================
-# FUNCTION: GIVE COLOR A NAME
-# ============================================
+
 
 def get_color_name(hue, saturation, value):
 
@@ -64,25 +60,19 @@ def get_color_name(hue, saturation, value):
     return "Unknown"
 
 
-# ============================================
-# FUNCTION: FIND DOMINANT COLORS
-# ============================================
+
 
 def find_dominant_colors(frame):
 
-    # Resize frame for faster K-Means
     small = cv.resize(
         frame,
         (320, 240)
     )
 
-    # Convert image into list of pixels
     pixels = small.reshape((-1, 3))
 
-    # K-Means needs float32
     pixels = np.float32(pixels)
 
-    # K-Means stopping criteria
     criteria = (
         cv.TERM_CRITERIA_EPS +
         cv.TERM_CRITERIA_MAX_ITER,
@@ -90,7 +80,6 @@ def find_dominant_colors(frame):
         1.0
     )
 
-    # Run K-Means
     _, labels, centers = cv.kmeans(
         pixels,
         NUM_COLORS,
@@ -106,9 +95,6 @@ def find_dominant_colors(frame):
     return centers
 
 
-# ============================================
-# FUNCTION: CREATE COLOR INFORMATION
-# ============================================
 
 def create_color_information(centers):
 
@@ -150,9 +136,7 @@ def create_color_information(centers):
     return color_information
 
 
-# ============================================
-# OPEN WEBCAM
-# ============================================
+
 
 cap = cv.VideoCapture(0)
 
@@ -162,24 +146,17 @@ if not cap.isOpened():
     )
 
 
-# ============================================
-# VARIABLES
-# ============================================
+
 
 frame_count = 0
 
 color_information = []
 
 
-# ============================================
-# MAIN LOOP
-# ============================================
+
 
 while True:
 
-    # ----------------------------------------
-    # GET FRAME
-    # ----------------------------------------
 
     ret, frame = cap.read()
 
@@ -192,9 +169,7 @@ while True:
         break
 
 
-    # ----------------------------------------
-    # RUN K-MEANS PERIODICALLY
-    # ----------------------------------------
+  
 
     if (
         frame_count % KMEANS_INTERVAL == 0
@@ -228,26 +203,18 @@ while True:
             )
 
 
-    # ----------------------------------------
-    # CONVERT FRAME TO HSV
-    # ----------------------------------------
-
+   
     hsv = cv.cvtColor(
         frame,
         cv.COLOR_BGR2HSV
     )
 
 
-    # ----------------------------------------
-    # CREATE RESULT IMAGE
-    # ----------------------------------------
 
     result = frame.copy()
 
 
-    # ========================================
-    # DETECT EACH DOMINANT COLOR
-    # ========================================
+
 
     for color in color_information:
 
@@ -258,9 +225,7 @@ while True:
         hue, saturation, value = color["hsv"]
 
 
-        # ------------------------------------
-        # CREATE HSV RANGE
-        # ------------------------------------
+     
 
         lower_hue = max(
             hue - TOLERANCE_H,
@@ -397,19 +362,11 @@ while True:
                 )
 
 
-    # ========================================
-    # SHOW RESULTS
-    # ========================================
 
     cv.imshow(
         "Webcam - Color Object Detector",
         result
     )
-
-
-    # ========================================
-    # PRESS Q TO QUIT
-    # ========================================
 
     if cv.waitKey(1) & 0xFF == ord('q'):
 
@@ -419,9 +376,6 @@ while True:
     frame_count += 1
 
 
-# ============================================
-# RELEASE WEBCAM
-# ============================================
 
 cap.release()
 
