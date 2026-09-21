@@ -1,7 +1,6 @@
 import cv2 as cv
 
 
-# Open webcam
 cap = cv.VideoCapture(0)
 
 if not cap.isOpened():
@@ -10,7 +9,6 @@ if not cap.isOpened():
 
 while True:
 
-    # Get one frame from webcam
     ret, frame = cap.read()
 
     if not ret:
@@ -18,9 +16,8 @@ while True:
         break
 
 
-    # --------------------------------
-    # 1. BGR → HSV
-    # --------------------------------
+    #  BGR → HSV
+    
 
     hsv = cv.cvtColor(
         frame,
@@ -28,9 +25,9 @@ while True:
     )
 
 
-    # --------------------------------
-    # 2. RED COLOR RANGE
-    # --------------------------------
+   
+    # RED COLOR RANGE
+   
 
     lower_red1 = (0, 50, 50)
     upper_red1 = (10, 255, 255)
@@ -39,7 +36,6 @@ while True:
     upper_red2 = (179, 255, 255)
 
 
-    # Create two red masks
     mask1 = cv.inRange(
         hsv,
         lower_red1,
@@ -60,9 +56,7 @@ while True:
     )
 
 
-    # --------------------------------
-    # 3. CLEAN MASK
-    # --------------------------------
+    #  CLEAN MASK
 
     kernel = cv.getStructuringElement(
         cv.MORPH_RECT,
@@ -82,9 +76,7 @@ while True:
     )
 
 
-    # --------------------------------
-    # 4. FIND CONTOURS
-    # --------------------------------
+    #  FIND CONTOURS
 
     contours, _ = cv.findContours(
         clean_mask,
@@ -93,9 +85,7 @@ while True:
     )
 
 
-    # --------------------------------
-    # 5. FIND RED OBJECTS
-    # --------------------------------
+    # FIND RED OBJECTS
 
     for contour in contours:
 
@@ -130,9 +120,7 @@ while True:
             )
 
 
-    # --------------------------------
-    # 6. SHOW WEBCAM
-    # --------------------------------
+
 
     cv.imshow(
         "Webcam - Red Object Detector",
@@ -145,9 +133,6 @@ while True:
     )
 
 
-    # --------------------------------
-    # 7. PRESS Q TO QUIT
-    # --------------------------------
 
     if cv.waitKey(1) & 0xFF == ord('q'):
         break
